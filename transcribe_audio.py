@@ -55,7 +55,7 @@ from sys import platform
 from colorama import Fore, Back, Style, init
 from tqdm import tqdm
 from datetime import datetime
-from numba import cuda
+# from numba import cuda
 from prettytable import PrettyTable
 try:
     from dateutil.tz import tzlocal
@@ -273,7 +273,7 @@ def main():
                         choices=["af", "am", "ar", "as", "az", "ba", "be", "bg", "bn", "bo", "br", "bs", "ca", "cs", "cy", "da", "de", "el", "en", "es", "et", "eu", "fa", "fi", "fo", "fr", "gl", "gu", "ha", "haw", "he", "hi", "hr", "ht", "hu", "hy", "id", "is", "it", "ja", "jw", "ka", "kk", "km", "kn", "ko", "la", "lb", "ln", "lo", "lt", "lv", "mg", "mi", "mk", "ml", "mn", "mr", "ms", "mt", "my", "ne", "nl", "nn", "no", "oc", "pa", "pl", "ps", "pt", "ro", "ru", "sa", "sd", "si", "sk", "sl", "sn", "so", "sq", "sr", "su", "sv", "sw", "ta", "te", "tg", "th", "tk", "tl", "tr", "tt", "uk", "ur", "uz", "vi", "yi", "yo", "zh", "Afrikaans", "Albanian", "Amharic", "Arabic", "Armenian", "Assamese", "Azerbaijani", "Bashkir", "Basque", "Belarusian", "Bengali", "Bosnian", "Breton", "Bulgarian", "Burmese", "Castilian", "Catalan", "Chinese", "Croatian", "Czech", "Danish", "Dutch", "English", "Estonian", "Faroese", "Finnish", "Flemish", "French", "Galician", "Georgian", "German", "Greek", "Gujarati", "Haitian", "Haitian Creole", "Hausa", "Hawaiian", "Hebrew", "Hindi", "Hungarian", "Icelandic", "Indonesian", "Italian", "Japanese", "Javanese", "Kannada", "Kazakh", "Khmer", "Korean", "Lao", "Latin", "Latvian", "Letzeburgesch", "Lingala", "Lithuanian", "Luxembourgish", "Macedonian", "Malagasy", "Malay", "Malayalam", "Maltese", "Maori", "Marathi", "Moldavian", "Moldovan", "Mongolian", "Myanmar", "Nepali", "Norwegian", "Nynorsk", "Occitan", "Panjabi", "Pashto", "Persian", "Polish", "Portuguese", "Punjabi", "Pushto", "Romanian", "Russian", "Sanskrit", "Serbian", "Shona", "Sindhi", "Sinhala", "Sinhalese", "Slovak", "Slovenian", "Somali", "Spanish", "Sundanese", "Swahili", "Swedish", "Tagalog", "Tajik", "Tamil", "Tatar", "Telugu", "Thai", "Tibetan", "Turkish", "Turkmen", "Ukrainian", "Urdu", "Uzbek", "Valencian", "Vietnamese", "Welsh", "Yiddish", "Yoruba"])
     parser.add_argument("--auto_model_swap", action='store_true',
                         help="Automatically swap model based on detected language.")
-    parser.add_argument("--device", default="cuda",
+    parser.add_argument("--device", default="cpu",
                         help="Device to use for model. If not specified, will use CUDA if available. Available options: cpu, cuda")
     parser.add_argument("--cuda_device", default=0,
                         help="CUDA device to use for model. If not specified, will use CUDA device 0.", type=int)
@@ -359,7 +359,7 @@ def main():
         else:
             selected_device = args.cuda_device
 
-        torch.cuda.set_device(selected_device)
+        # torch.cuda.set_device(selected_device)
         print(f"CUDA device name: {torch.cuda.get_device_name(torch.cuda.current_device())}")
         print(f"VRAM available: {torch.cuda.get_device_properties(torch.cuda.current_device()).total_memory / 1024 / 1024} MB")
 
@@ -563,11 +563,11 @@ def main():
                 audio = whisper.load_audio(temp_file)
                 audio = whisper.pad_or_trim(audio)
                 mel = whisper.log_mel_spectrogram(audio).to(device)
-                if ".en" in model:
-                    detected_language = "English"
-                else:
-                    _, language_probs = audio_model.detect_language(mel)
-                    detected_language = max(language_probs, key=language_probs.get)
+                detected_language = "English"
+                # if ".en" in model:
+                # else:
+                #     _, language_probs = audio_model.detect_language(mel)
+                #     detected_language = max(language_probs, key=language_probs.get)
 
                 if args.language:
                     detected_language = args.language
@@ -589,13 +589,13 @@ def main():
                             else:
                                 english_counter = 0
                                 last_detected_language = detected_language
-                        try:
-                            confidence = language_probs[detected_language] * 100
-                            confidence_color = Fore.GREEN if confidence > 75 else (Fore.YELLOW if confidence > 50 else Fore.RED)
-                            set_window_title(detected_language, confidence)
-                            print(f"Detected language: {detected_language} {confidence_color}({confidence:.2f}% Accuracy){Style.RESET_ALL}")
-                        except:
-                            pass
+                        # try:
+                        #     confidence = language_probs[detected_language] * 100
+                        #     confidence_color = Fore.GREEN if confidence > 75 else (Fore.YELLOW if confidence > 50 else Fore.RED)
+                        #     set_window_title(detected_language, confidence)
+                        #     print(f"Detected language: {detected_language} {confidence_color}({confidence:.2f}% Accuracy){Style.RESET_ALL}")
+                        # except:
+                        #     pass
                 print("Transcribing...")
                 if device == "cuda":
                     result = audio_model.transcribe(temp_file, fp16=torch.cuda.is_available())
@@ -715,7 +715,7 @@ def main():
     if not os.path.isdir('out'):
         os.mkdir('out')
     
-
+    i = 0
     if os.path.isfile('out\\transcription.txt'):
         print('out\\transcription.txt already exists, changing the name to transcription_1.txt')
         i = 1

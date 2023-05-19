@@ -2,38 +2,38 @@
 Title Realtime Whipser Translation App
 cls
 
-if exist "data_whisper" (
-    set /p reinstall="Python environment already exists. Do you want to reinstall? [y/n]: "
-    if /i "%reinstall%"=="y" (
-        echo Deleting existing environment...
-        call data_whisper\Scripts\deactivate.bat
-        rmdir /s /q data_whisper
-    ) else (
-        echo Exiting...
-        exit /b
-    )
-)
+@REM if exist "data_whisper" (
+@REM     set /p reinstall="Python environment already exists. Do you want to reinstall? [y/n]: "
+@REM     if /i "%reinstall%"=="y" (
+@REM         echo Deleting existing environment...
+@REM         call data_whisper\Scripts\deactivate.bat
+@REM         rmdir /s /q data_whisper
+@REM     ) else (
+@REM         echo Exiting...
+@REM         @REM exit /b
+@REM     )
+@REM )
 
-Echo Creating python environment...
-python -m venv data_whisper
+@REM Echo Creating python environment...
+@REM python -m venv data_whisper
 
-Echo Created Env...
+Echo Running file...
 
-call data_whisper\Scripts\activate.bat
-Echo Installing Whisper
-Echo Updating pip
-python.exe -m pip install --upgrade pip
+@REM call data_whisper\Scripts\activate.bat
+@REM Echo Installing Whisper
+@REM Echo Updating pip
+@REM python.exe -m pip install --upgrade pip
 
-Echo Installing Requirements...
-pip install wheel
-pip install setuptools-rust
-pip install -r requirements.txt
+@REM Echo Installing Requirements...
+@REM pip install wheel
+@REM pip install setuptools-rust
+@REM pip install -r requirements.txt
 
-:cuda-patch
-Echo Fixing CUDA Since Whisper installs non gpu version.
-pip uninstall --yes torch torchvision torchaudio
-pip cache purge
-pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+@REM :cuda-patch
+@REM Echo Fixing CUDA Since Whisper installs non gpu version.
+@REM pip uninstall --yes torch torchvision torchaudio
+@REM pip cache purge
+@REM pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 
 Echo. Setup Completed!
 
@@ -44,7 +44,7 @@ Echo You can edit with notepad anytime.
 Echo.
 Echo @echo off > livetranslation.bat
 Echo cls >> livetranslation.bat
-Echo call "data_whisper\Scripts\activate.bat" >> livetranslation.bat
+@REM Echo call "data_whisper\Scripts\activate.bat" >> livetranslation.bat
 Echo python "transcribe_audio.py" --ram 4gb --non_english --translate >> livetranslation.bat
 pause
 
